@@ -1,131 +1,73 @@
-# RunAnywhere SDK - Simple Chat App
+## SMART DATA ACTIONABLE ENGINE
 
-A simple Android chat application demonstrating the RunAnywhere SDK for on-device AI inference.
+# What this project is
 
-## What This App Does
+This repo is a mobile (Android, Kotlin + Jetpack Compose) voice-first AI assistant that turns natural language into actionable device commands (system toggles, screenshots/screen recordings, calls/messages, alarms/reminders, app control) and also runs on-device LLMs for chat/automation using the RunAnywhere SDK. It's built for hands-free interaction and privacy (on-device LLMs). 
 
-This is a minimal example showing how to:
+# Quick highlights (what you get)
 
-1. Initialize the RunAnywhere SDK
-2. Download AI models (LLMs)
-3. Load models into memory
-4. Run text generation with streaming responses
+- True hands-free wake-word (“Hey Jarvis”) detection and automatic voice input. 
+- Voice → voice conversations (app speaks responses when you used voice input). 
+- Device/system control (WiFi, Bluetooth, DND, flashlight, mobile data, airplane mode — with platform fallbacks where the OS restricts programmatic toggles). 
+- Screenshot and screen recording via voice/text commands (files saved to gallery; MP4/H264 for recordings, PNG for screenshots). 
+-On-device LLM support via RunAnywhere SDK: download/manage models, streaming responses, model loading/unloading
 
-## Features
+# Supported features & commands
 
-- **Model Management**: Download and load AI models directly in the app
-- **Real-time Streaming**: See AI responses generate word-by-word
-- **Simple UI**: Clean Jetpack Compose interface
-- **On-Device AI**: All inference runs locally on your Android device
+-Use these exact or very similar phrasings — the parser supports many variations / fuzzy matching, but these are canonical examples.
+-Wake word & voice flow
+-Enable: tap mic → say “Hey Jarvis” → app says “Hey, I’m listening” → give command. 
 
-## Quick Start
 
-### 1. Build and Run
+System settings (voice) :
+-WiFi: turn on wifi / turn off wifi
+-Bluetooth: turn on bluetooth / turn off bluetooth
+-DND: enable dnd / disable dnd
+-Airplane mode / Mobile data: opens settings panel on newer Android builds (due to OS restrictions). 
 
-```bash
-./gradlew assembleDebug
-# Or open in Android Studio and click Run
-```
+Calls, SMS, WhatsApp, Email: 
+-Calls: call John or call 1234567890
+-SMS: text Mom saying I'll be late
+-WhatsApp message: whatsapp John saying hello
+-WhatsApp call: whatsapp call Alice or whatsapp video call Bob
+-Email generation (AI): generate email to boss@company.com about meeting context project update (app drafts the email and opens Gmail). 
 
-### 2. Download a Model
+Media & apps: 
+-play [song name] or play [song] by [artist] (Spotify / YouTube Music via intelligent fallback).
+-search youtube for [query]
+-open [app name] or launch [app]. 
 
-1. Launch the app
-2. Tap "Models" in the top bar
-3. Choose a model (we recommend starting with "SmolLM2 360M Q8_0" - only 119 MB)
-4. Tap "Download" and wait for it to complete
+Productivity / reminders: 
+-Alarms: set alarm for 7am or wake me up at 6:30am
+-Timers: set timer for 10 minutes
+-Reminders: remind me to buy milk at 5pm tomorrow
+-To-do lists: create a to-do list for groceries and add apples, bananas → show my groceries list. 
 
-### 3. Load the Model
+# Input formats:
+The app supports natural language — but the following formats are the most reliable:
+Simple verb-first commands (system, media, screenshots):
+verb + object → e.g. turn on wifi, open spotify. 
 
-1. Once downloaded, tap "Load" on the model
-2. Wait for "Model loaded! Ready to chat." message
+Contact actions:
+call <contact name> or call <phone number>
+text <contact name> saying <message>
 
-### 4. Start Chatting!
+Messages / Email generation:
+whatsapp <contact> saying <message>
+generate email to <email> about <subject> context <details> → app uses AI to draft body. 
 
-1. Type a message in the text field
-2. Tap "Send"
-3. Watch the AI response generate in real-time
+To-dos & reminders:
+create a to-do list for <title> and add <item1, item2, ...>
+remind me to <task> at <time/date> — supports today, tomorrow, 7am, 6:30pm, or explicit dates like June 1, 2025. 
 
-## Available Models
 
-The app comes pre-configured with two models:
+* Initialize SDK in your Application class, register service providers (LlamaCpp provider), register models (via URL or local AAR/JitPack), then downloadModel() and loadModel() before inference. Streaming token responses are supported for real-time UI. See the SDK guide for exact API usage and recommended models. 
 
-| Model | Size | Quality | Best For |
-|-------|------|---------|----------|
-| SmolLM2 360M Q8_0 | 119 MB | Basic | Testing, quick responses |
-| Qwen 2.5 0.5B Instruct Q6_K | 374 MB | Better | General conversations |
+* Wake-word detection restarts automatically after a voice interaction (fix for single-trigger behavior). 
+ Grant MediaProjection when asked (screenshot/record). 
 
-## Technical Details
+SCREENSHOT_RECORDING_FEATURE
 
-### SDK Components Used
+ Download & load a model via RunAnywhere if you want on-device AI chat. 
 
-- **RunAnywhere Core SDK**: Component architecture and model management
-- **LlamaCpp Module**: Optimized llama.cpp inference engine with 7 ARM64 variants
-- **Kotlin Coroutines**: For async operations and streaming
-
-### Architecture
-
-```
-MyApplication (initialization)
-    ↓
-ChatViewModel (state management)
-    ↓
-ChatScreen (UI layer)
-```
-
-### Key Files
-
-- `MyApplication.kt` - SDK initialization and model registration
-- `ChatViewModel.kt` - Business logic and state management
-- `MainActivity.kt` - UI components and composables
-
-## Requirements
-
-- Android 7.0 (API 24) or higher
-- ~200 MB free storage (for smallest model)
-- Internet connection (for downloading models)
-
-## Troubleshooting
-
-### Models not showing up
-
-- Wait a few seconds for SDK initialization
-- Tap "Refresh" in the Models section
-- Check logcat for initialization errors
-
-### Download fails
-
-- Check internet connection
-- Ensure sufficient storage space
-- Verify INTERNET permission in AndroidManifest.xml
-
-### App crashes during generation
-
-- Try the smaller model (SmolLM2 360M)
-- Close other apps to free memory
-- Check that `largeHeap="true"` is set in AndroidManifest.xml
-
-### Generation is slow
-
-- This is normal for on-device inference
-- Smaller models run faster
-- Performance depends on device CPU
-
-## Next Steps
-
-Want to customize this app? Try:
-
-1. **Add more models** - Edit `MyApplication.kt` → `registerModels()`
-2. **Customize UI** - Edit `MainActivity.kt` compose functions
-3. **Add system prompts** - Modify message format in `ChatViewModel.kt`
-4. **Persist chat history** - Add Room database or DataStore
-5. **Add model parameters** - Explore temperature, top-k, top-p settings
-
-## Resources
-
-- [Full Quick Start Guide](app/src/main/java/com/runanywhere/startup_hackathon20/QUICK_START_ANDROID.md)
-- [RunAnywhere SDK Repository](https://github.com/RunanywhereAI/runanywhere-sdks)
-- [SDK Documentation](https://github.com/RunanywhereAI/runanywhere-sdks/blob/main/CLAUDE.md)
-
-## License
-
-This example app follows the license of the RunAnywhere SDK.
+RUNANYWHERE_SDK_COMPLETE_GUIDE
