@@ -65,9 +65,3 @@ remind me to <task> at <time/date> — supports today, tomorrow, 7am, 6:30pm, or
 
 * Wake-word detection restarts automatically after a voice interaction (fix for single-trigger behavior). 
  Grant MediaProjection when asked (screenshot/record). 
-
-SCREENSHOT_RECORDING_FEATURE
-
- Download & load a model via RunAnywhere if you want on-device AI chat. 
-
-RUNANYWHERE_SDK_COMPLETE_GUIDE
